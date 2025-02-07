@@ -18,7 +18,6 @@ public class LoginTests extends TestBase{
         app.getHelperUser().openLoginForm();
         app.getHelperUser().fillLoginForm("ilost1@gmail.com", "898756542321Qq#");
         app.getHelperUser().submitLogin();
-        app.getHelperUser().pause(5);
         app.getHelperUser().confirmLogin();
         app.getHelperUser().pause(5);
 
