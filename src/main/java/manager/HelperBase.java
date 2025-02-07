@@ -4,6 +4,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 public class HelperBase {
     WebDriver driver;
 
@@ -22,7 +24,20 @@ public class HelperBase {
         if (text != null){
             element.sendKeys(text);
         }
-
     }
+    public boolean isElementPresent(By locator) {
+        List<WebElement> list = driver.findElements(locator);
+        return list.size() > 0;
+    }
+
+    public void pause(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 }
