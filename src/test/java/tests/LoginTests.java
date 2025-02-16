@@ -1,5 +1,6 @@
 package tests;
 
+import manager.HelperBase;
 import models.User;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -8,35 +9,21 @@ import org.testng.annotations.Test;
 
 public class LoginTests extends TestBase {
 
-//    @BeforeMethod
-//    public void preCondition(){
-//        if (app.getHelperUser().isLogged()){
-//            app.getHelperUser().logout();
-//        }
-//    }
-
     @BeforeMethod
-    public void preCondition() {
-        // Если пользователь залогинен, разлогин
-        if (app.getHelperUser().isLogged()) {
+    public void preCondition(){
+        if (app.getHelperUser().isLogged()){
             app.getHelperUser().logout();
         }
-
-        //Если кнопка "Login" неактивна, переходим на форму регистрации
-        if (app.getHelperUser().isLoginButtonDisabled()) {
-            app.getHelperUser().openLoginForm();
-        }
     }
-
 
     @Test
     public void loginSuccess() {
         app.getHelperUser().openLoginForm();
         app.getHelperUser().fillLoginForm("ilost1@gmail.com", "898756542321Qq#");
-        app.getHelperUser().submitLogin();
+        app.getHelperUser().submit();
         //Assert if element with text "Logged in success" is present
-        //Assert.assertTrue(app.getHelperUser().getMessage().contains("Login or Password incorrect"));
-        app.getHelperUser().clickOKButton();
+        Assert.assertEquals(app.getHelperUser().getMessage(),"Logged in success");
+        //app.getHelperUser().clickOKButton();
     }
 
     @Test
@@ -45,9 +32,9 @@ public class LoginTests extends TestBase {
 
         app.getHelperUser().openLoginForm();
         app.getHelperUser().fillLoginForm(user);
-        app.getHelperUser().submitLogin();
-        //Assert.assertTrue(app.getHelperUser().getMessage().contains("Login or Password incorrect"));
-        app.getHelperUser().clickOKButton();
+        app.getHelperUser().submit();
+        app.getHelperUser().pause(2000);
+        Assert.assertEquals(app.getHelperUser().getMessage(),"Logged in success");
 
     }
 
@@ -55,81 +42,68 @@ public class LoginTests extends TestBase {
     public void loginSuccessModel() {
         app.getHelperUser().openLoginForm();
         app.getHelperUser().fillLoginForm("ilost1@gmail.com", "898756542321Qq#");
-        app.getHelperUser().submitLogin();
-        //Assert.assertFalse(app.getHelperUser().getMessage().contains("Login or Password incorrect"));
-        app.getHelperUser().clickOKButton();
+        app.getHelperUser().submit();
+        // app.getHelperUser().pause(5000);
+        Assert.assertEquals(app.getHelperUser().getMessage(),"Logged in success");
+    }
+
+
+    @Test
+    public void loginWrongEmail(){
+        User user = new User().setEmail("margagmail.com").setPassword("Mmar123456$");
+        app.getHelperUser().openLoginForm();
+        app.getHelperUser().fillLoginForm(user);
+        app.getHelperUser().submit();
+        Assert.assertEquals(app.getHelperUser().getErrorText(), "It'snot look like email");
+        Assert.assertTrue(app.getHelperUser().isYallaButtonNotActive());
+    }
+
+    @Test
+    public void loginWrongPassword(){
+        User user = new User().setEmail("marga@gmail.com").setPassword("Mmar123");
+        app.getHelperUser().openLoginForm();
+        app.getHelperUser().fillLoginForm(user);
+        app.getHelperUser().submit();
+
+        Assert.assertEquals(app.getHelperUser().getMessage(),"\"Login or Password incorrect\"");
+    }
+
+    @Test
+    public void loginUnregisteredUser(){
+        User user = new User().setEmail("maaa@gmail.com").setPassword("Maa123456$");
+        app.getHelperUser().openLoginForm();
+        app.getHelperUser().fillLoginForm(user);
+        app.getHelperUser().submit();
+        app.getHelperUser().pause(2000);
+        Assert.assertEquals(app.getHelperUser().getMessage(),"\"Login or Password incorrect\"");
 
     }
 
     @Test
-    public void loginWrongEmail() {
-        User user = new User().setEmail("ql@gmail.com").setPassword("Mmgjf56$");
-
+    public void loginEmptyEmail(){
+        User user = new User().setEmail("").setPassword("");
         app.getHelperUser().openLoginForm();
         app.getHelperUser().fillLoginForm(user);
-        app.getHelperUser().submitLogin();
-        Assert.assertTrue(app.getHelperUser().getMessage().contains("Login or Password incorrect"));
-        app.getHelperUser().clickOKButton();
-
-    }
-
-    //@AfterMethod
-//    public void postCondition(){
-//        app.getHelperUser().clickOKButton();
-//    }
-
-    @Test
-    public void loginWithEmptyEmail() {
-        User user = new User().setEmail("").setPassword("Mmgjf56$");
-
-        app.getHelperUser().openLoginForm();
-        app.getHelperUser().fillLoginForm(user);
-
-        Assert.assertEquals(app.getHelperUser().getMessage(), "Email is required");
-
+        app.getHelperUser().submit();
+        Assert.assertEquals(app.getHelperUser().getErrorText(), "Email is required");
+        Assert.assertTrue(app.getHelperUser().isYallaButtonNotActive());
     }
 
     @Test
-    public void loginWithEmptyPassword() {
-        User user = new User().setEmail("test@gmail.com").setPassword("");
-
+    public void loginEmptyPassword(){
+        User user = new User().setEmail("marga@gmail.com").setPassword("");
         app.getHelperUser().openLoginForm();
         app.getHelperUser().fillLoginForm(user);
-
-        Assert.assertFalse(app.getHelperUser().getMessage().contains("Password is required"));
-
-    }
-    @Test
-    public void loginWithInvalidEmail() {
-        User user = new User().setEmail("wrongemail.com").setPassword("Mmgjf56$");
-
-        app.getHelperUser().openLoginForm();
-        app.getHelperUser().fillLoginForm(user);
-        app.getHelperUser().submitLogin();
-        Assert.assertTrue(app.getHelperUser().getMessage().contains("It'snot look like email"));
-
+        app.getHelperUser().submit();
+        Assert.assertEquals(app.getHelperUser().getErrorText(), "Password is required");
+        Assert.assertTrue(app.getHelperUser().isYallaButtonNotActive());
     }
 
-    @Test
-    public void loginWithEmailWithoutDomain() {
-        User user = new User().setEmail("user@").setPassword("Mmgjf56$");
 
-        app.getHelperUser().openLoginForm();
-        app.getHelperUser().fillLoginForm(user);
-        app.getHelperUser().submitLogin();
-        Assert.assertTrue(app.getHelperUser().getMessage().contains("It'snot look like email"));
 
+    @AfterMethod
+    public void postCondition(){
+        app.getHelperUser().clickOkButton();
     }
-    @Test
-    public void loginWithOnlyLettersPassword() {
-        User user = new User().setEmail("test@gmail.com").setPassword("passwordonly");
-
-        app.getHelperUser().openLoginForm();
-        app.getHelperUser().fillLoginForm(user);
-        app.getHelperUser().submitLogin();
-        Assert.assertTrue(app.getHelperUser().getMessage().contains("Login or Password incorrect"));
-        app.getHelperUser().clickOKButton();
-    }
-
 
 }
