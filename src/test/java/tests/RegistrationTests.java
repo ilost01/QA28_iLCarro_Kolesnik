@@ -13,6 +13,7 @@ public class RegistrationTests extends TestBase {
 
     @BeforeMethod
     public void preCondition() {
+        app.getHelperUser().refreshPage();
         if (app.getHelperUser().isLogged())
             app.getHelperUser().logout();
     }
@@ -114,6 +115,7 @@ public class RegistrationTests extends TestBase {
     @Test
     public void registrationWithoutPolicyCheck() {
 
+
         User user = new User()
                 .setFirsName("Lis1a")
                 .setLastName("Snow")
@@ -122,7 +124,7 @@ public class RegistrationTests extends TestBase {
 
         app.getHelperUser().openRegistrationForm();
         app.getHelperUser().fillRegistrationForm(user);
-        app.getHelperUser().pause(2000);
+
         Assert.assertTrue(app.getHelperUser().isYallaButtonNotActive());
     }
 

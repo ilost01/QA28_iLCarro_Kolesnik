@@ -54,6 +54,10 @@ public class HelperBase {
 
       return res && !result;
 
+    }
+
+    public void refreshPage() {
+        wd.navigate().refresh();
 
 
     }

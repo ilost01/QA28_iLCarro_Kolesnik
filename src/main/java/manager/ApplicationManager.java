@@ -16,6 +16,7 @@ public class ApplicationManager {
         wd.manage().window().maximize();
         wd.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         wd.navigate().to("https://ilcarro.web.app/");
+
         helperUser = new HelperUser(wd);
 
     }
